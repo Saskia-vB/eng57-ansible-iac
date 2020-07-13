@@ -54,3 +54,45 @@ We will cover:
 ##### Commands
 - vagrant init
 - vagrant plugin install vagrant-hostupdater
+
+# Inventory
+- where you specify your hosts
+
+# hosts file
+- specify machine
+1. Create the global dir: sudo mkdir /etc/ansible
+2. Copy in a configuration file: sudo curl -L https://raw.githubusercontent.com/ansible/ansible/devel/examples/ansible.cfg -o /etc/ansible/ansible.cfg
+3. Verify it works with: ansible localhost -m ping
+
+## Create ansible VM
+- install ansible:
+$ sudo apt update
+$ sudo apt install software-properties-common
+$ sudo apt-add-repository --yes --update ppa:ansible/ansible
+$ sudo apt install ansible
+
+- check ansible installation:
+ansible --version
+
+- cd /etc/ansible/
+- ls
+- you should see hosts
+- sudo nano hosts:
+[web]
+192.168.33.10 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
+[db]
+192.168.33.11 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
+[aws]
+192.168.33.12 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
+- ping 192.168.33.10
+- ping 192.168.33.11
+- ping 192.168.33.12
+- ssh-keygen
+- cd .ssh
+- cat id_rsa.pub
+- copy and paste into vagrant ssh web > cd .ssh > sudo nano authorized_keys
+- back on vagrant ssh ansible
+- sudo nano /etc/ssh/sshd_config
+- change PermitRootLogin prohibit-password to PermitRootLogin yes
+- change PasswordAuthentication no to PasswordAuthentication yes
+- then, restart ssh service: sudo service ssh restart

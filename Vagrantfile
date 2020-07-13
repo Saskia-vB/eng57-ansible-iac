@@ -5,8 +5,8 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
-
 plugins = ['vagrant-hostsupdater']
+
 plugins.each do |plugin|
   exec "vagrant plugin install #{plugin}" unless Vagrant.has_plugin? plugin
 end
@@ -14,47 +14,62 @@ end
 Vagrant.configure("2") do |config|
 
   config.vm.define "web" do |web|
-    # specifying the box
-    web.config.vm.box = "ubuntu/bionic64"
+    #specifying the box
+    web.vm.box = "ubuntu/bionic64"
 
-    # assign an ip
-    web.vm.network :private_network, ip: "192.168.10.10"
+    #assign an ip
+    web.vm.network :private_network, ip: "192.168.33.10"
 
-    # assign a hostname for the vm
+    #assing a hostname for the vm
     web.vm.hostname = "web"
 
-    # assign a hostname for web browser access
+    #assing a hostname for browser access
     web.hostsupdater.aliases = ["development.local"]
 
   end
 
-  config.vm.define "db" do |web|
-    # specifying the box
-    db.config.vm.box = "ubuntu/bionic64"
+  config.vm.define "db" do |db|
+    #specifying the box
+    db.vm.box = "ubuntu/bionic64"
 
-    # assign an ip
-    db.vm.network :private_network, ip: "192.168.10.20"
+    #assign an ip
+    db.vm.network :private_network, ip: "192.168.33.11"
 
-    # assign a hostname
+    #assing a hostname for the vm
     db.vm.hostname = "db"
 
-    # assign a hostname for web browser access
+    #assing a hostname for browser access
     db.hostsupdater.aliases = ["development.db"]
 
   end
 
-  config.vm.define "aws" do |web|
-    # specifying the box
-    aws.config.vm.box = "ubuntu/bionic64"
+  config.vm.define "aws" do |aws|
+    #specifying the box
+    aws.vm.box = "ubuntu/bionic64"
 
-    # assign an ip
-    aws.vm.network :private_network, ip: "192.168.10.30"
+    #assign an ip
+    aws.vm.network :private_network, ip: "192.168.33.12"
 
-    # assign a hostname
+    #assing a hostname for the vm
     aws.vm.hostname = "aws"
 
-    # assign a hostname for web browser access
+    #assing a hostname for browser access
     aws.hostsupdater.aliases = ["development.aws"]
+
+  end
+
+  config.vm.define "ansible" do |ansible|
+    #specifying the box
+    ansible.vm.box = "ubuntu/bionic64"
+
+    #assign an ip
+    ansible.vm.network "private_network", ip: "192.168.33.13"
+
+    #assing a hostname for the vm
+    ansible.vm.hostname = "ansible"
+
+    #assing a hostname for browser access
+    ansible.hostsupdater.aliases = ["development.ansible"]
 
   end
 
