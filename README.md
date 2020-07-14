@@ -65,6 +65,24 @@ We will cover:
 3. Verify it works with: ansible localhost -m ping
 
 ## Create ansible VM
+- Vagrant file:
+```ruby
+config.vm.define "ansible" do |ansible|
+  #specifying the box
+  ansible.vm.box = "ubuntu/bionic64"
+
+  #assign an ip
+  ansible.vm.network "private_network", ip: "192.168.33.13"
+
+  #assing a hostname for the vm
+  ansible.vm.hostname = "ansible"
+
+  #assing a hostname for browser access
+  ansible.hostsupdater.aliases = ["development.ansible"]
+
+end
+```
+
 - install ansible:
 $ sudo apt update
 $ sudo apt install software-properties-common
@@ -74,34 +92,40 @@ $ sudo apt install ansible
 - check ansible installation:
 ansible --version
 
-- cd /etc/ansible/
-- ls
-- you should see hosts
-- sudo nano hosts:
+- add hosts:
+$ cd /etc/ansible/
+$ ls
+(you should see hosts)
+$ sudo nano hosts
+- paste this into hosts:
 [web]
 192.168.33.10 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
 [db]
 192.168.33.11 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
 [aws]
 192.168.33.12 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
-- ping 192.168.33.10
-- ping 192.168.33.11
-- ping 192.168.33.12
-- ssh-keygen
-- cd .ssh
-- cat id_rsa.pub
+- check if you can ping:
+$ ping 192.168.33.10
+$ ping 192.168.33.11
+$ ping 192.168.33.12
+- create ssh key
+$ ssh-keygen
+$ cd .ssh
+$ cat id_rsa.pub
 - copy and paste into vagrant ssh web > cd .ssh > sudo nano authorized_keys
 - back on vagrant ssh ansible
-- sudo nano /etc/ssh/sshd_config
+$ sudo nano /etc/ssh/sshd_config
 - change PermitRootLogin prohibit-password to PermitRootLogin yes
 - change PasswordAuthentication no to PasswordAuthentication yes
-- then, restart ssh service: sudo service ssh restart
+- then, restart ssh service:
+$ sudo service ssh restart
 - back on vagrant ssh web
-- sudo nano /etc/ssh/sshd_config
+$ sudo nano /etc/ssh/sshd_config
 - change PermitRootLogin prohibit-password to PermitRootLogin yes
 - change PasswordAuthentication no to PasswordAuthentication yes
-- then, restart ssh service: sudo service ssh restart
-- sudo passwd root
+- then, restart ssh service:
+$ sudo service ssh restart
+$ sudo passwd root
 - back on vagrant ssh ansible
-- ssh root@192.168.33.10 (web ip)
-- enter password! 
+$ ssh root@192.168.33.10 (web ip)
+- enter password!
