@@ -129,3 +129,9 @@ $ sudo passwd root
 - back on vagrant ssh ansible
 $ ssh root@192.168.33.10 (web ip)
 - enter password!
+- to ping all machines:
+$ ansible all -m ping
+- cd /vagrant/
+$ ansible-playbook playbook.yml
+-> check indentation
+-> output: 3 tasks, ok = 3

@@ -27,21 +27,21 @@ Vagrant.configure("2") do |config|
     web.hostsupdater.aliases = ["development.local"]
 
   end
-
-  config.vm.define "db" do |db|
-    #specifying the box
-    db.vm.box = "ubuntu/bionic64"
-
-    #assign an ip
-    db.vm.network :private_network, ip: "192.168.33.11"
-
-    #assing a hostname for the vm
-    db.vm.hostname = "db"
-
-    #assing a hostname for browser access
-    db.hostsupdater.aliases = ["development.db"]
-
-  end
+  #
+  # config.vm.define "db" do |db|
+  #   #specifying the box
+  #   db.vm.box = "ubuntu/bionic64"
+  #
+  #   #assign an ip
+  #   db.vm.network :private_network, ip: "192.168.33.11"
+  #
+  #   #assing a hostname for the vm
+  #   db.vm.hostname = "db"
+  #
+  #   #assing a hostname for browser access
+  #   db.hostsupdater.aliases = ["development.db"]
+  #
+  # end
 
   config.vm.define "aws" do |aws|
     #specifying the box
@@ -70,6 +70,9 @@ Vagrant.configure("2") do |config|
 
     #assing a hostname for browser access
     ansible.hostsupdater.aliases = ["development.ansible"]
+
+    # provisioning
+    ansible.vm.provision "shell", path: "environments/ansible/provision.sh" 
 
   end
 
