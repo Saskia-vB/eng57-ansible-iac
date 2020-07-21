@@ -29,6 +29,13 @@ We will cover:
 - tools include: Ansible, Terraform (hashicorp tool), otherssss
 
 ### Ansible
+- helping to manage servers, on the operations side
+- increase number of servers it is difficult to create consistent setup of different infrastructures - to maintain all by hand would be difficult -> ansible
+- write one script and each script can be executed and have consistent environments
+- how do we use them in our environment:
+  1. IT automation: write instructions that automate IT setup
+  2. Configuration: consistent configuration, guarantee with precision that all servers are set up identically
+  3. Automate: push out instructions that can deploy automatically different servers
 - high level language (more abstracted) for dealing with powershell vs bash environments. For dealing with different package managers. And generally, abstracting the more infrastructure agnostic.
 - open source
 - does all 4 pillars of DevOps in one: flexibility, ease of use, robustness and cost
@@ -135,3 +142,41 @@ $ ansible all -m ping
 $ ansible-playbook playbook.yml
 -> check indentation
 -> output: 3 tasks, ok = 3
+
+
+### Troubleshooting and errors
+
+- if ERROR: "Using a SSH password instead of a key is not possible because Host Key checking is enabled and sshpass does not support this.  Please add this host's fingerprint to your known_hosts file to manage this host."
+- cd /etc/ansible
+- sudo nano ansible.cfg
+- enter: host_key_checking = false
+
+- when running app you land only on nginx page
+- add to playbook:
+  - name: Remove nginx default files - sites available
+    shell: rm /etc/nginx/sites-available/default
+
+  - name: Remove nginx default files - sites enabled
+    shell: rm /etc/nginx/sites-enabled/default
+
+  - name: Copy nginx default file
+    shell: cp /home/ubuntu/default.conf /etc/nginx/sites-available/default.conf
+
+  - name: Symlink from sites available to sites enabled
+    shell: ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
+
+
+
+- when running playbook for app and passing all the tasks but the webpage won't load: Error: Failed to lookup view "index" in views directory "/views"
+-
+- delete app folder
+- clone functioning app folder i.e. sparta node sample app
+
+
+
+- when running playbook do db:
+  - Install MongoDb error: fatal: [192.168.33.11]: FAILED! => {"changed": false, "msg": "E:Malformed entry 1 in list file /etc/apt/sources.list.d/a.list (URI parse), E:The list of sources could not be read."}
+  - vagrant ssh db
+  - cd /etc/apt/sources.list.d
+  - sudo nano a.list
+  - comment out deb http

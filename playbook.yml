@@ -6,26 +6,132 @@
 - hosts: web
 # host is to define the name of your host machine, group or all servers
 # in this example we are targeting server called web
-
   gather_facts: yes
 # gethering facts before performing any tasks
-
   become: true
 # become is used to get root permission to perform any tasks that may require admin access
-
   tasks:
 #Tasks are executed in order, one at a time, against all Servers matched by the host pattern
 # Every task should have a name, which is included in the output from running the playbook
 # The goal of each task is to execute a module, with very specific arguments.
-
   - name: Install nginx
   # we are installing nginx on our web server
-
-    apt: pkg=nginx state=present
+    apt: pkg=nginx state=present update_cache=true
     notify:
     - restart nginx
+
   - name: Enable nginx during boot
     service: name=nginx  state=started enabled=yes
+
+  - name: Remove nginx default files - sites available
+    shell: rm /etc/nginx/sites-available/default
+
+  - name: Remove nginx default files - sites enabled
+    shell: rm /etc/nginx/sites-enabled/default
+
+  - name: Copy nginx default file
+    shell: cp /home/ubuntu/default.conf /etc/nginx/sites-available/default.conf
+
+  - name: Symlink from sites available to sites enabled
+    shell: ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
+
+
+  - name: install git
+    apt: pkg=git state=present
+
+  # - name: clone app repo
+  #   git:
+  #     cmd: clone git@github.com:spartaglobal/node-sample-app.git
+  #     dest: /home/ubuntu/
+
+  # - name: clone app from app repo
+  #   shell: git clone git@github.com:spartaglobal/node-sample-app.git
+
+
+  - name: Install python
+    apt : pkg=python state=present
+
+  - name: Install Node
+    shell: |
+      curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+
+  - name: Install node part 2
+    apt: pkg=nodejs state=present
+
+  - name: install NPM
+    shell: npm i
+    args:
+      chdir: /home/ubuntu/app/
+
+  # - name: NPM install forever
+  #   shell: npm install forever -g
+  #
+  # - name: start app
+  #   shell: forever start /home/ubuntu/app/app.js
+
+  - name: export db host variable for database
+    shell: echo 'export DB_HOST=mongodb://192.168.0.20:27017/posts' >> ~/.bashrc
+
+  - name: Install pm2
+    npm:
+      name: pm2
+      global: yes
+
+  - name: pm2 stop
+    become_user: ubuntu
+    command: pm2 stop all
+
+  - name: to start a app
+    become_user: ubuntu
+    command: pm2 start /home/ubuntu/app/app.js
+    tags:
+        - app
+
   handlers:
     - name: restart nginx
       service: name=nginx state=restarted
+
+# ------
+
+
+
+
+# Install nodejs
+  # - name: Install curl
+  #   yum:
+  #     name: curl
+  #     state: present
+
+  # - name: Install wget
+  #   yum:
+  #     name: wget
+  #     state: present
+
+  # - name: add apt key for nodesource
+  #   apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+
+  # - name: add repo for nodesource
+  #   apt_repository:
+  #     repo: 'deb https://deb.nodesource.com/node_0.10 {{ ansible_distribution_release }} main'
+  #     update_cache: yes
+
+  # - name: install nodejs
+  #   apt: name=nodejs
+  # - name: Install packages
+  #   apt: name={{ item }} update_cache=yes state=latest
+  #   with_items:
+  #     - npm
+  #     - git
+  #     - nginx
+  #     - curl
+  # - name: Create nvm
+  #   gather_facts: 'no'
+  #   hosts: web
+  #   become: yes
+  #   remote_user: root
+
+
+  # Couldn't make this work:
+    # roles:
+    #   - role: ansible-role-nvm
+    #     nodejs_version: '10.16.0'
